@@ -12,7 +12,7 @@ IrcNetwork::IrcNetwork()
 
 IrcNetwork::~IrcNetwork()
 {
-
+    qDebug() << "ircnetwork killed";
 }
 
 void IrcNetwork::SetAutojoinChannels(std::vector<IrcChannel> channels)

@@ -10,21 +10,27 @@ IrcConnection::IrcConnection()
 
 IrcConnection::~IrcConnection()
 {
-    qDebug() << "KILLED";
+    qDebug() << "ircconnection KILLED";
 }
 
 void IrcConnection::StartConnection()
 {
     IRC conn;
     //conn.hook_irc_command("376", this->end_of_motd); /* hook the end of MOTD message */
-    char* address = CommonUtils::QStringToChars(mAddress);
+    char* address = strdup(CommonUtils::QStringToChars(mAddress));
     int port = mPort.toInt();
-    char* nick = CommonUtils::QStringToChars(mNick);
+    char* nick = strdup(CommonUtils::QStringToChars("testclient42"));
     char* user = nick;
     char* name =  nick;
     char* password = "";
 
-    qDebug() << nick << port << address << user << name << password;
+    qDebug() << "Connection data:\n";
+    qDebug() << nick;
+    qDebug() << port;
+    qDebug() << address;
+    qDebug() << user;
+    qDebug()<< name;
+    qDebug() << password;
     conn.hook_irc_command("PRIVMSG", this->OnEventPrivMsg); /* hook private messages */
     conn.start(address, port, nick, user, name, password); /* connect to a server */
     conn.join("#testclient");
@@ -36,7 +42,7 @@ void IrcConnection::StartConnection()
     }
     conn.message_loop(); /* start the message loop */
 
-    emit finished();
+    //emit finished();
 }
 
 int IrcConnection::OnEventPrivMsg(char* params, irc_reply_data* hostd, void* conn) /* our callback function */

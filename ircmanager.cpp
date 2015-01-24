@@ -1,6 +1,7 @@
 #include "ircmanager.h"
 #include "ircnetwork.h"
 #include "settingsmanager.h"
+#include <QDebug>
 
 bool IrcManager::instanceFlag = false;
 IrcManager* IrcManager::single = NULL;
@@ -12,6 +13,7 @@ IrcManager::IrcManager()
 
 IrcManager::~IrcManager()
 {
+    qDebug() << "ircmanager killed";
     instanceFlag = false;
 }
 
@@ -34,6 +36,11 @@ void IrcManager::AddConnection(IrcNetwork* cn)
     mCurrentNetworks.push_back(cn);
 }
 
+/* IrcManager::OnQuickConnect
+ * \brief Load saved networks from SettingsManager database, join each network.
+ * For each saved network in the SettingsManager list, create a persistent copy
+ * and add it to mCurrentNetworks. Start each network connection in mCurrentNetworks.
+ */
 void IrcManager::OnQuickConnect()
 {
 
