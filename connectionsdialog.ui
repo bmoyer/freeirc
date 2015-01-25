@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>ConnectionsDialog</class>
  <widget class="QDialog" name="ConnectionsDialog">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>My Connections</string>
   </property>
   <widget class="QListWidget" name="networkList">
    <property name="geometry">

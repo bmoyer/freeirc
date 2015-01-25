@@ -3,9 +3,13 @@
 
 #include <vector>
 #include "ircnetwork.h"
+#include "ircmessage.h"
+#include "mainwindow.h"
+#include <QObject>
 
-class IrcManager
+class IrcManager : public QObject
 {
+    Q_OBJECT
 public:
     ~IrcManager();
     //Singleton class
@@ -14,6 +18,12 @@ public:
     //Operations
     void AddConnection(IrcNetwork* cn);
     void OnQuickConnect();
+    void SetMainWindowPtr(MainWindow* pMainWindow) { mpMainWindow = pMainWindow; }
+    void HandlePrivateMessage(IrcMessage);
+    std::vector<IrcNetwork* > GetCurrentNetworks(void) { return mCurrentNetworks; }
+
+signals:
+    void packet(QStringList list);
 
 private:
     //Singleton class
@@ -23,6 +33,8 @@ private:
 
     //Attributes
     std::vector<IrcNetwork*> mCurrentNetworks;
+    MainWindow* mpMainWindow;
 };
+
 
 #endif // IRCMANAGER_H

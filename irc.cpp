@@ -40,8 +40,9 @@
 #define INVALID_SOCKET -1
 #endif
 
-IRC::IRC()
+IRC::IRC(QString name)
 {
+    mNetworkName = name;
     hooks=0;
     chan_users=0;
     connected=false;

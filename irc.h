@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <QString>
 
 #define __CPIRC_VERSION__	0.1
 #define __IRC_DEBUG__ 1
@@ -59,7 +60,7 @@ struct channel_user
 class IRC
 {
 public:
-    IRC();
+    IRC(QString name);
     ~IRC();
     int start(char* server, int port, char* nick, char* user, char* name, char* pass);
     void disconnect();
@@ -81,6 +82,8 @@ public:
     int is_op(char* channel, char* nick);
     int is_voice(char* channel, char* nick);
     char* current_nick();
+    void setname(QString networkName) { QString mNetworkName = networkName; }
+    QString getname(void) { return mNetworkName; }
 private:
     void call_hook(char* irc_command, char*params, irc_reply_data* hostd);
     /*void call_the_hook(irc_command_hook* hook, char* irc_command, char*params, irc_host_data* hostd);*/
@@ -98,4 +101,5 @@ private:
     FILE* datain;
     channel_user* chan_users;
     irc_command_hook* hooks;
+    QString mNetworkName;
 };

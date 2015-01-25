@@ -21,7 +21,9 @@ SOURCES += main.cpp\
     ircchannel.cpp \
     irc.cpp \
     ircconnection.cpp \
-    ircmanager.cpp
+    ircmanager.cpp \
+    chatpane.cpp \
+    ircmessage.cpp
 
 HEADERS  += mainwindow.h \
     connectionsdialog.h \
@@ -31,7 +33,9 @@ HEADERS  += mainwindow.h \
     ircchannel.h \
     irc.h \
     ircconnection.h \
-    ircmanager.h
+    ircmanager.h \
+    chatpane.h \
+    ircmessage.h
 
 FORMS    += mainwindow.ui \
     connectionsdialog.ui

@@ -33,6 +33,7 @@ void IrcNetwork::StartConnection()
     mpIrcConnection->SetAddress(mAddress);
     mpIrcConnection->SetPort(mPort);
     mpIrcConnection->SetAutojoinChannels(mAutojoinChannels);
+    mpIrcConnection->SetName(mName);
 
     //Start IRC connection thread
     QThread* thread = new QThread();
