@@ -24,12 +24,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ChatPane *chatPane = new ChatPane("FreeIRC", "STATUS");
-    chatPane->setText("mainwindow");
-    chatPane->setReadOnly(true);
-    ui->stackedWidget->addWidget(chatPane);
-    ui->stackedWidget->setCurrentWidget(chatPane);
-    mChatPanes.push_back(chatPane);
+    mChatListItemModel = new QStandardItemModel();
+    AddChatPane("FreeIRC","");
+    GetChatPane("FreeIRC", "")->setAlignment(Qt::AlignCenter);
+    ui->stackedWidget->setCurrentWidget(GetChatPane("FreeIRC", ""));
+    GetChatPane("FreeIRC", "")->setText("Welcome to FreeIRC!\nTo get started, click Chat => Quick-connect!");
+    QStandardItem* nModel = new QStandardItem("FreeIRC");
+    mChatListItemModel->appendRow(nModel);
+    ui->chatSessionTree->setModel(mChatListItemModel);
 
     IrcManager* m = IrcManager::GetInstance();
     m->SetMainWindowPtr(this);
@@ -40,22 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
     SettingsManager* s = SettingsManager::GetInstance();
     s->CreateTables();
     s->LoadSettingsFromDB();
-
-//    QStandardItemModel* model = new QStandardItemModel();
-
-//    QStandardItem* item0 = new QStandardItem("SwiftIRC");
-//    QStandardItem* item1 = new QStandardItem("Rizon");
-//    QStandardItem* item3 = new QStandardItem("#pixelz");
-//    QStandardItem* item4 = new QStandardItem("#drug");
-//    QStandardItem* item5 = new QStandardItem("#whatever");
-
-//    model->appendRow(item0);
-//    model->appendRow(item1);
-//    item0->appendRow(item3);
-//    item0->appendRow(item4);
-//    item1->appendRow(item5);
-
-//    ui->chatSessionTree->setModel(model);
 }
 
 MainWindow::~MainWindow()
@@ -75,23 +61,26 @@ void MainWindow::on_actionQuick_connect_triggered()
 {
     SettingsManager* m = SettingsManager::GetInstance();
     m->LoadSettingsFromDB();
-    QStandardItemModel* model = new QStandardItemModel();
     for(int i = 0; i < m->GetSavedNetworks().size(); i++)
     {
         IrcNetwork* n = m->GetSavedNetworks()[i];
-        QStandardItem* nModel = new QStandardItem(n->GetName());
-        model->appendRow(nModel);
+        QString networkName = n->GetName();
+        AddChatPane(networkName, "");
+        QStandardItem* nModel = new QStandardItem(networkName);
+        mChatListItemModel->appendRow(nModel);
 
         for(int j = 0; j < n->GetAutojoinChannels().size(); j++)
         {
-            QString name = n->GetAutojoinChannels()[i].GetName();
-            QStandardItem* cModel = new QStandardItem(name);
+            /* Adding chat panes here */
+            QString channelName = n->GetAutojoinChannels()[j].GetName();
+            AddChatPane(networkName, channelName);
+            QStandardItem* cModel = new QStandardItem( channelName);
             nModel->appendRow(cModel);
 
-            qDebug() << "row added!";
+            qDebug() << "row added - " <<  channelName;
         }
     }
-    ui->chatSessionTree->setModel(model);
+    ui->chatSessionTree->setModel(mChatListItemModel);
     IrcManager* ircM = IrcManager::GetInstance();
     ircM->OnQuickConnect();
 }
@@ -101,6 +90,11 @@ void MainWindow::AddChatPane(QString networkName, QString channelName)
 
     ChatPane *c = new ChatPane(networkName, channelName);
     mChatPanes.push_back(c);
+    ui->stackedWidget->addWidget(c);
+    for(auto i = mChatPanes.begin(); i != mChatPanes.end(); ++i)
+    {
+        qDebug() << "Network name: " << (*i)->GetNetworkName();
+    }
 }
 
 ChatPane* MainWindow::GetChatPane(QString networkName, QString channelName)
@@ -118,12 +112,14 @@ void MainWindow::AddMessageToChatPane(QString networkName, QString sender, QStri
 {
     //QString networkName = "FreeIRC";
     //QString channelName = "STATUS";
+    qDebug() << "LOOKING FOR: " << networkName << target;
     for(int i = 0; i < mChatPanes.size(); i++)
     {
-        if((mChatPanes[i]->GetNetworkName() == networkName) && (mChatPanes[i]->GetChannelName() == sender))
+        qDebug() << "PANE INFO: " << mChatPanes[i]->GetNetworkName() << mChatPanes[i]->GetChannelName();
+        if((mChatPanes[i]->GetNetworkName() == networkName) && (mChatPanes[i]->GetChannelName() == target))
         {
-            qDebug() << "found the one";
-            QString messageStr = "<" + sender + "> " + message + "\n";
+            qDebug() << "ADDMESSAGETOCHATPANE(): FOUND PANE FOR MESSAGE";
+            QString messageStr = "<" + sender + "> " + message.right(message.size() -1) + "";
             mChatPanes[i]->append(messageStr);
         }
     }
@@ -131,6 +127,7 @@ void MainWindow::AddMessageToChatPane(QString networkName, QString sender, QStri
 
 void MainWindow::OnIrcMessage(QStringList messagePacket)
 {
+    qDebug() << "OnIrcMessage()";
     for(int i = 0; i < messagePacket.size(); i++)
     {
         qDebug() << messagePacket[i];
@@ -152,6 +149,11 @@ void MainWindow::on_chatSessionTree_clicked(const QModelIndex &index)
     if(network != "")
     {
         ChatPane* pane = GetChatPane(network, channel);
+        ui->stackedWidget->setCurrentWidget(pane);
+    }
+    else
+    {
+        ChatPane* pane = GetChatPane(channel, "");
         ui->stackedWidget->setCurrentWidget(pane);
     }
 }

@@ -74,6 +74,12 @@
       <height>221</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Courier</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
     <property name="currentIndex">
      <number>1</number>
     </property>

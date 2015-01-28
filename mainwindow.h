@@ -8,6 +8,7 @@
 #include <QDebug>
 #include "chatpane.h"
 #include "ircmessage.h"
+#include <QStandardItemModel>
 
 #define HIT_MSG_BOX() QMessageBox q; q.exec();
 
@@ -46,6 +47,7 @@ private:
     Ui::MainWindow *ui;
     std::vector<ChatPane*> mChatPanes;
     QString mSettingsFile;
+    QStandardItemModel* mChatListItemModel;
 
     //Operations
 };
