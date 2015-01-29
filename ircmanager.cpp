@@ -22,6 +22,9 @@ IrcManager::~IrcManager()
     instanceFlag = false;
 }
 
+/* IrcManager::GetInstance
+ * \brief Get the one and only IRC Manager.
+ */
 IrcManager* IrcManager::GetInstance(void)
 {
     if(!instanceFlag)
@@ -37,7 +40,7 @@ IrcManager* IrcManager::GetInstance(void)
 }
 
 /* IrcManager::AddConnection
- * \brief Makes persistent localt copy of an IRC network and starts its connection.
+ * \brief Makes persistent local copy of an IRC network and starts its connection.
  */
 void IrcManager::AddConnection(IrcNetwork* cn)
 {

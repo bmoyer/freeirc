@@ -25,6 +25,7 @@ public:
     void SetAutojoinChannels(std::vector<IrcChannel> channels) { mAutojoinChannels = channels; }
     static int OnEventPrivMsg(char* params, irc_reply_data* hostd, void* conn);
     static int OnEventJoin(char* params, irc_reply_data* hostd, void* conn);
+    static int OnEventNames(char* params, irc_reply_data* hostd, void* conn);
 
     void OnMessage() { emit OnIrcMessage(); }
 private:
@@ -33,6 +34,7 @@ private:
     QString mNick;
     QString mName;
     std::vector<IrcChannel> mAutojoinChannels;
+    IRC* mConnection;
 
 public slots:
     void StartConnection(void);

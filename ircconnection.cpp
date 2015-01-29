@@ -21,7 +21,8 @@ IrcConnection::~IrcConnection()
 
 void IrcConnection::StartConnection()
 {
-    IRC conn(mName);
+    //IRC conn(mName);
+    mConnection = new IRC(mName);
     //conn.setname(mName);
     //conn.hook_irc_command("376", this->end_of_motd); /* hook the end of MOTD message */
     char* address = strdup(CommonUtils::QStringToChars(mAddress));
@@ -33,16 +34,17 @@ void IrcConnection::StartConnection()
     char* password = "";
 
     qDebug() << "Connection data: " << nick << port << address << user << name << password;
-    conn.hook_irc_command("PRIVMSG", this->OnEventPrivMsg); /* hook private messages */
- //conn.hook_irc_command("JOIN", this->OnEventJoin); /* hook private messages */
-    conn.start(address, port, nick, user, name, password); /* connect to a server */
+    mConnection->hook_irc_command("PRIVMSG", this->OnEventPrivMsg); /* hook private messages */
+    mConnection->hook_irc_command("JOIN", this->OnEventJoin); /* hook private messages */
+    mConnection->hook_irc_command("353", this->OnEventNames); /* hook private messages */
+    mConnection->start(address, port, nick, user, name, password); /* connect to a server */
     for(int i = 0; i < mAutojoinChannels.size(); i++)
     {
         QString channel = mAutojoinChannels[i].GetName();
         qDebug() << channel;
-        conn.join(CommonUtils::QStringToChars(channel));
+        mConnection->join(CommonUtils::QStringToChars(channel));
     }
-    conn.message_loop(); /* start the message loop */
+    mConnection->message_loop(); /* start the message loop */
 
     //emit finished();
 }
@@ -69,6 +71,18 @@ int IrcConnection::OnEventJoin(char* params, irc_reply_data* hostd, void* conn) 
 {
     qDebug() << "JOIN PARAMS: \n";
     IRC* irc_conn=(IRC*)conn;
+    qDebug() << params << hostd->host << " " << hostd->ident << " " << hostd->nick << " "<< hostd->target;
+    return 0;
+}
+
+
+int IrcConnection::OnEventNames(char* params, irc_reply_data* hostd, void* conn) /* our callback function */
+{
+    qDebug() << "NAMES PARAMS: \n";
+    IRC* irc_conn=(IRC*)conn;
+
+    //qDebug() << params;
+    printf("%s", params);
     qDebug() << params << hostd->host << " " << hostd->ident << " " << hostd->nick << " "<< hostd->target;
     return 0;
 }

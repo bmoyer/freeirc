@@ -61,13 +61,30 @@ void MainWindow::on_actionQuick_connect_triggered()
 {
     SettingsManager* m = SettingsManager::GetInstance();
     m->LoadSettingsFromDB();
+
+    //If user has no networks saved, alert them and take them to Connections dialog
+    if(m->GetSavedNetworks().size() == 0)
+    {
+       QMessageBox::StandardButton reply = QMessageBox::question(this,
+                   "tes", "You have no IRC networks saved.\nWould you like to add some?", QMessageBox::Yes |
+                                      QMessageBox::No, QMessageBox::Yes);
+       if(reply == QMessageBox::Yes)
+       {
+        ConnectionsDialog d(this);
+        d.exec();
+       }
+    }
+
     for(int i = 0; i < m->GetSavedNetworks().size(); i++)
     {
         IrcNetwork* n = m->GetSavedNetworks()[i];
         QString networkName = n->GetName();
-        AddChatPane(networkName, "");
+        //AddChatPane(networkName, "");
         QStandardItem* nModel = new QStandardItem(networkName);
         mChatListItemModel->appendRow(nModel);
+        QStandardItem* statusModel = new QStandardItem("Status");
+        AddChatPane(networkName, "Status");
+        nModel->appendRow(statusModel);
 
         for(int j = 0; j < n->GetAutojoinChannels().size(); j++)
         {
@@ -76,8 +93,6 @@ void MainWindow::on_actionQuick_connect_triggered()
             AddChatPane(networkName, channelName);
             QStandardItem* cModel = new QStandardItem( channelName);
             nModel->appendRow(cModel);
-
-            qDebug() << "row added - " <<  channelName;
         }
     }
     ui->chatSessionTree->setModel(mChatListItemModel);
@@ -89,6 +104,7 @@ void MainWindow::AddChatPane(QString networkName, QString channelName)
 {
 
     ChatPane *c = new ChatPane(networkName, channelName);
+    c->setReadOnly(true);
     mChatPanes.push_back(c);
     ui->stackedWidget->addWidget(c);
     for(auto i = mChatPanes.begin(); i != mChatPanes.end(); ++i)

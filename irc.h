@@ -84,6 +84,7 @@ public:
     char* current_nick();
     void setname(QString networkName) { QString mNetworkName = networkName; }
     QString getname(void) { return mNetworkName; }
+
 private:
     void call_hook(char* irc_command, char*params, irc_reply_data* hostd);
     /*void call_the_hook(irc_command_hook* hook, char* irc_command, char*params, irc_host_data* hostd);*/
